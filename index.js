@@ -1,64 +1,55 @@
 var assert = require('assert');
 
+function isNumeric(value){
+  return !isNaN(parseFloat(value)) && isFinite(value);
+}
+
 var mathItUp = {
-  '+': (x, y) => { return parseInt(x) + parseInt(y); },
-  '-': (x, y) => { return parseInt(x) - parseInt(y); },
-  '*': (x, y) => { return parseInt(x) * parseInt(y); },
-  '/': (x, y) => { return parseInt(y) / parseInt(x); }
+  '+': (x, y) => parseFloat(x) + parseFloat(y),
+  '-': (x, y) => parseFloat(x) - parseFloat(y),
+  '*': (x, y) => parseFloat(x) * parseFloat(y),
+  '/': (x, y) => parseFloat(y) / parseFloat(x),
+  '^': (x, y) => Math.pow(parseFloat(x), parseFloat(y))
 };
 
 function rpn(input) {
-  const raw = input.split(' ');
+  const postfix = input.split(' ');
   let
     stack = [],
-    operator,
-    a, b;
+    operator
 
-  for (let i = 0; i < raw.length; i++){
-    stack.push(raw[i]);
-    console.log(stack);
-    if (!isNaN(raw[i])){   // Number
-      console.log(`__________________`);
-      console.log(`${raw[i]} is an operand. Add to stack and continue.`);
+  for (let i = 0; i < postfix.length; i++){
+    if (isNumeric(postfix[i])){
+      stack.push(parseFloat(postfix[i]));
     } else {
-      console.log(`__________________`);
-      console.log(`${raw[i]} is an operator. Use it to calculate the numbers.`);
+      let n1 = stack.pop();
+      let n2 = stack.pop();
+      operator = postfix[i];
 
-      operator = stack.pop();
-      a = stack.pop();
-      b = stack.pop();
-
-      console.log(`__________________`);
-      console.log(`operator: ${operator}`);
-      console.log(`a: ${a}`);
-      console.log(`b: ${b}`);
-
-      stack.push(mathItUp[operator](a,b));
-
-      console.log(`__________________`);
-      console.log(`stack: ${stack}`);
-
-      return stack.pop();
+      stack.push( mathItUp[operator]( n1, n2 ) );
     }
   }
+  return stack;
 }
 
-var value = rpn('2 2 + 3 *');
-console.log(value);
-describe('rpn', function() {
-  it('3 3 +', function() {
-    assert.equal(rpn('3 3 +'), 6);
+describe('rpn', () => {
+  it('3.5 3 +', () => {
+    assert.equal(rpn('3.5 3 +'), 6.5);
   });
 
-  it('2 2 + 3 *', function() {
+  it('2 2 + 3 *', () => {
     assert.equal(rpn('2 2 + 3 *'), 12);
   });
 
-  it('2 2 3 + *', function() {
+  it('2 2 3 + *', () => {
     assert.equal(rpn('2 2 3 + *'), 10);
   });
 
-  it('2 2 3 3 / * /', function() {
+  it('2 2 3 3 / * /', () => {
     assert.equal(rpn('2 2 3 3 / * /'), 1);
+  });
+
+  it('2 2 3 3 / * / 4 * 6 ^', () => {
+    assert.equal(rpn('2 2 3 3 / * / 4 * 6 ^'), 1296);
   });
 });
