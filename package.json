@@ -1,0 +1,17 @@
+{
+  "name": "rpn-calculator",
+  "version": "1.0.0",
+  "description": "Reverse Polish Notation calculator",
+  "scripts": {
+    "test": "mocha index.js",
+    "test:debug": "mocha debug index.js"
+  },
+  "keywords": [
+    "rpn"
+  ],
+  "author": "johnnymo87",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^3.0.2"
+  }
+}
